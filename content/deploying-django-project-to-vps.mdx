@@ -1,224 +1,113 @@
 ---
 title: "Deploying django project to vps"
-publishedAt: "2024-09-20"
+publishedAt: "2025-01-15"
 summary: "Deploy a Django application to a VPS step by step using Nginx"
 ---
 
-- Prerequisites: 
-    - Create a requirements.txt file that contains all packages used in project:  
-        ```shell
-        -$ pip freeze > requirements.txt
-        ```
-    - Set up static files:
-        - Install whitenoise:
-            ```shell
-            -$ pip install whitenoise
-            -$ pip freeze > requirements.txt
-            ```
-        - Paste the following at the top of middleware list:
-            ```python
-            MIDDLEWARES = [
-                ... #Others middlewares
-                "whitenoise.middleware.WhiteNoiseMiddleware",
-            ]
-            ```
-        - Add the following:
-            ```python
-            STATIC_URL = '/static/'
-            STATIC_ROOT = BASE_DIR / "staticfiles"
-            STATICFILES_DIRS = [
-                os.path.join(BASE_DIR, 'static'),
-            ]
+Deploying a Django application to a VPS (Virtual Private Server) is a rite of passage for many developers. While "Serverless" and "Edge" deployments are popular in 2026, the **VPS + Nginx + Gunicorn** stack remains the industry standard for robust, high-performance web systems where you need total control over the environment.
 
-            STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-            ```
-        - Collect static files:
-            ```shell
-            -$ python manage.py collectstatic
-            ```
+This guide will walk you through the "Pro" way to deploy your Django project, ensuring security, scalability, and ease of updates.
 
-    - Push to github repository
+---
 
-1. Ssh into server:
-    - run:
-        -   ```shell
-            -$ ssh username@server_ip_address
-            ```
-        - Enter password
-        &nbsp;
+### Phase 1: Local Preparation
 
-2. Update & Upgrade Server:
+Before we even touch the server, we need to ensure our project is "Production Ready."
+
+1.  **Requirement Management**: 
+    Create a `requirements.txt` file that contains all packages used in project:  
     ```shell
-    -$ sudo apt-get update & sudo apt-get upgrade
+    pip freeze > requirements.txt
     ```
-    &nbsp;
 
-3. Install python & pip:
+2.  **Statics & Middleware**:
+    Install `whitenoise` to serve static files directly from Gunicorn without needing Nginx for every single asset:
     ```shell
-    -$ sudo apt install python3 python3-pip
+    pip install whitenoise
+    pip freeze > requirements.txt
     ```
-    &nbsp;
 
-4. Create & activate virtual environment:
-    ```shell
-    -$ virtualenv /opt/myproject
-    -$ source /opt/myproject/bin/activate
+    Update your `settings.py`:
+    ```python
+    MIDDLEWARES = [
+        ...
+        "whitenoise.middleware.WhiteNoiseMiddleware",
+    ]
+
+    STATIC_URL = '/static/'
+    STATIC_ROOT = BASE_DIR / "staticfiles"
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
     ```
-    &nbsp;
 
-5. Clone Repository:
-    - `cd /opt/myproject`
-    - `mkdir myproject`
-        - It may seem redundant to have two directories with the same name; however, it makes it so that your virtualenv name and project name are the same.
-    - `cd myproject`
-    - check if git is installed:
-        - `git status`
-        - `sudo apt-get install git`
-    - Clone repo:
-        `git clone repo-url`
-    - install requirements:
-        - `cd repo-name`
-        - `pip install -r requirements.txt`
-        - `pip install gunicorn`
-    &nbsp;
+### Phase 2: Server Hardening
 
-6. Nginx Configuration:
-    - Install nginx:
-    ```shell
-    -$ sudo apt install nginx
-    -$ sudo nano /etc/nginx/sites-available/myproject
-    ```
-    - Type the following into the file:
-        ```nginx
-        server {
-            listen 80;
-            server_name yourip;
+SSH into your server and prepare the "Ground Zero."
 
-            access_log /var/log/nginx/website-name.log;
+```shell
+ssh username@server_ip_address
+sudo apt-get update && sudo apt-get upgrade -y
+sudo apt install python3 python3-pip python3-venv nginx ufw -y
+```
 
-            location /static/ {
-                alias /opt/myproject/myproject/path-to-static-files/;
-            }
+### Phase 3: The Deployment Pipeline
 
-            location / {
-                proxy_pass http://127.0.0.1:8000;
-                proxy_set_header X-Forwarded-Host $server_name;
-                proxy_set_header X-Real-IP $remote_addr;
-                add_header P3P 'CP="ALLDSP COR PSAa PSDa OURNOR ONL UNI COM NAV"';
-            }
-        }
-         ```
-    - Now we need to set up a symbolic link in the /etc/nginx/sites-enabled directory that points to this configuration file. That is how NGINX knows this site is active. Change directories to /etc/nginx/sites-enabled like this:
-        ```shell
-        -$ cd /etc/nginx/sites-enabled
-        -$ sudo ln -s ../sites-available/myproject
-        ```
-    - Go to:
-        ```shell
-        -$ /etc/nginx/nginx.conf
-        ```
-        - uncomment this line:
-            ```python
-            # server_names_hash_bucket_size 64;
-            ```
-        - like this
-            ```python
-            server_names_hash_bucket_size 64;
-            ```
+We follow the "Opt Directory" pattern for organized deployments.
 
-    - Restart nginx:
-        ```shell
-        -$ sudo service nginx restart
-        ```
-    
-    &nbsp;
+```shell
+# 1. Environment Setup
+mkdir -p /opt/myproject && cd /opt/myproject
+python3 -m venv venv
+source venv/bin/activate
 
-7. Adjusting the Firewall
+# 2. Code Ingestion
+git clone https://github.com/your-username/repo.git
+cd repo
+pip install -r requirements.txt gunicorn
+```
 
-    - Before testing Nginx, the firewall software needs to be adjusted to allow access to the service. Nginx registers itself as a service with ufw upon installation, making it straightforward to allow Nginx access.
+### Phase 4: NginX Orchestration
 
-    - `sudo apt-get install ufw`
-    - `sudo ufw allow 8000`
+Nginx acts as our **Reverse Proxy**, handling SSL and incoming requests.
 
-    - Restart nginx:
-        - `sudo service nginx restart`
-    &nbsp;
+```nginx
+# /etc/nginx/sites-available/myproject
+server {
+    listen 80;
+    server_name yourdomain.com;
 
-8. Testing configuration:
+    location /static/ {
+        alias /opt/myproject/repo/staticfiles/;
+    }
 
-    - Run gunicorn:
-        - `cd /opt/myproject/myproject/repo-name`
-        - `gunicorn --bind 0.0.0.0:8000 project_name.wsgi`
-    - Visit your project on your server ip address on port 8000:
-        - `yourServerIp:8000`
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+    }
+}
+```
 
-    &nbsp;
+Enable the site and restart:
+```shell
+sudo ln -s /etc/nginx/sites-available/myproject /etc/nginx/sites-enabled
+sudo nginx -t
+sudo service nginx restart
+```
 
-9. Connecting domain:
-    - open your domain registrar and open your dns settings for the specified domain
+### Phase 5: SSL Integration (Let's Encrypt)
 
-    - Add an A record with name @, pointing to the ip address of the server you are hosting your project on
+In 2026, an unencrypted site is a dead site. Use Certbot to secure your traffic in seconds.
 
-    - Save changes
+```shell
+sudo apt install certbot python3-certbot-nginx -y
+sudo certbot --nginx -d yourdomain.com
+```
 
-    - Open your nginx configuration file:
-        - `sudo nano /etc/nginx/sites-available/myproject`
+---
 
-    - Make the following changes:
+### Conclusion: The "Durable" Deployment
 
-        ```nginx
-        server {
-            listen 80;
-            server_name yourdomain.com www.yourdomain.com;
+By moving away from managed platforms and mastering the VPS, you gain deep knowledge of how the web actually works. This setup provides the **Inertia** and **Control** needed for serious 2026 applications. 
 
-            access_log /var/log/nginx/website-name.log;
-
-            location /static/ {
-                alias /opt/myproject/myproject/path-to-static-files/;
-            }
-
-            location / {
-                proxy_pass yourServerIp:8000;
-                proxy_set_header X-Forwarded-Host $server_name;
-                proxy_set_header X-Real-IP $remote_addr;
-                add_header P3P 'CP="ALL DSP COR PSAa PSDa OUR NOR ONL UNI COM NAV"';
-            }
-        }
-        ```
-    - Restart nginx:
-        - `sudo service nginx restart`
-        
-    - Wait for dns changes to propagate and check your website on your connected domain
-    &nbsp;
-
-10. Install SSL on vps with Let's Encrypt (Requires domain):
-
-    - `sudo apt install certbot`
-    - `sudo apt install certbot python3-certbot-nginx`
-    - run the following and follow the process:
-        - `sudo certbot --nginx -d your_domain.com`
-    - check nginx configuration:
-        - `sudo nginx -t`
-    - reload nginx:
-        `sudo systemctl reload nginx`
-    - run gunicorn:
-        - `gunicorn --bind 0.0.0.0:8000 project_name.wsgi`
-
-- Run gunicorn in the background:
-    `nohup gunicorn --bind 0.0.0.0:8000 project_name.wsgi &`
-    &nbsp;
-
-- kill gunicorn running in background:
-    - `pkill gunicorn`
-    &nbsp;
-
-- Making changes
-
-# Refrences
-
-## Articles:
- - [https://www.digitalocean.com/community/tutorials/how-to-deploy-a-local-django-app-to-a-vps](https://www.digitalocean.com/community/tutorials/how-to-deploy-a-local-django-app-to-a-vps)
-
-- [https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-22-04](https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-22-04)
-
-- [https://stackoverflow.com/questions/37339383/nginx-gunicorn-django-not-working](https://stackoverflow.com/questions/37339383/nginx-gunicorn-django-not-working)
+Welcome to the world of self-hosting. Your app is now live, secure, and ready for the world.

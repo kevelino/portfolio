@@ -2,8 +2,8 @@ import { Icons } from "@/components/icons";
 import { HomeIcon, NotebookIcon } from "lucide-react";
 
 export const DATA = {
-  name: "Kevin Nengou",
-  initials: "KN",
+  name: "Kevelino",
+  initials: "K",
   url: "https://kevelino.vercel.com",
   location: "Douala, Cameroun",
   locationLink: "https://www.google.com/maps/place/douala",
@@ -11,7 +11,7 @@ export const DATA = {
     "Full-stack Developer turned Entrepreneur. I love building things and helping people.",
   summary:
     "Fullstack Web Developer passionate about creating frictionless and engaging digital experiences. With solid expertise in HTML, CSS, JavaScript, and in-depth know-how in React and Django frameworks, I am comfortable designing and developing high-performance websites adapted to the needs of each project. I have a methodical approach focused on customer satisfaction, and I am convinced that collaboration is essential to achieve exceptional results. Looking for new challenges, I am open to development and innovation opportunities in the web field.",
-  avatarUrl: "/me.png",
+  avatarUrl: "👨‍💻",
   skills: [
     "Python",
     "Django",
@@ -54,7 +54,7 @@ export const DATA = {
       },
       X: {
         name: "X",
-        url: "https://rb.gy/hkm7dr",
+        url: "https://x.com/justkevelino",
         icon: Icons.x,
 
         navbar: true,
@@ -75,157 +75,76 @@ export const DATA = {
     },
   },
 
-  work: [
-    {
-      company: "CFPTAC",
-      href: "https://cfptac.com",
-      badges: [],
-      location: "Remote",
-      title: "Vocational and technological training center for driving heavy machinery",
-      logoUrl: "/cfptac.png",
-      start: "Sep 2023",
-      end: "Oct 2024",
-      description:
-        "Increase the visibility of the company online and make it possible to register students online, integrate a Blog to regularly share company news and training advertisements.",
-    },
-    {
-      company: "Abenzou",
-      badges: [],
-      href: "https://abenzou.com",
-      location: "Remote",
-      title: "Company specializing in automobile customization",
-      logoUrl: "/abenzou.png",
-      start: "May 2024",
-      end: "Oct 2024",
-      description:
-        "Foster people's interest in automobile customization, adding a personal touch to their cars. Every car can be unique if its owner wishes and Abenzou is here to make that possible. All this while marketing mechanical tools to personalize your own vehicle.",
-    },
-    {
-      company: "ETResS",
-      badges: ["CTO"],
-      href: "https://etress.com",
-      location: "Remote",
-      title: "Bus ticket booking platform",
-      logoUrl: "/etress.png",
-      start: "March 2023",
-      end: "Present",
-      description:
-        "The Co-founders of ETResS and I had designed a platform to overcome the problem of acquiring a bus ticket in our towns and villages. The platform is to make it possible to purchase a ticket from your mobile with stable internet access without having to travel.",
-    },
-  ],
-  education: [
-    {
-      school: "Allo Training",
-      href: "https://allotraining.com",
-      degree: "Bachelor's Degree of Software Engineer",
-      logoUrl: "/allotraining.png",
-      start: "Oct 2022",
-      end: "Sep 2023",
-    },
-    {
-      school: "GBHS Nylon Brazzaville",
-      href: "https://uwaterloo.ca",
-      degree: "All of my secondary diplomas",
-      logoUrl: "/lybinybra.png",
-      start: "2015",
-      end: "2022",
-    },
-    
-  ],
+  work: [],
+  education: [],
   projects: [
     {
-      title: "Abenzou",
-      href: "https://abenzou.com",
-      dates: "May 2023 - Oct 2024",
+      title: "Vendo",
+      href: "https://vendo-delta-five.vercel.app/",
+      dates: "2024 - Present",
       active: true,
       description:
-        "Foster people's interest in automobile customization, adding a personal touch to their cars. Every car can be unique if its owner wishes and Abenzou is here to make that possible. All this while marketing mechanical tools to personalize your own vehicle.",
-      technologies: [
-        "Django",
-        "Python",
-        "PostgreSQL",
-        "Jinja",
-        "Bootstrap",
-        "Javascript",
-        "Docker",
-        "Gunicorn",
-      ],
+        "Chrome extension to optimize description for Vinted, LebonCoin, etc. Helps sellers increase visibility and close sales faster.",
+      technologies: ["Javascript", "Chrome API", "AI", "TailwindCSS"],
       links: [
         {
           type: "Website",
-          href: "https://abenzou.com",
+          href: "https://vendo-delta-five.vercel.app/",
           icon: <Icons.globe className="size-3" />,
         },
-        // {
-        //   type: "Source",
-        //   href: "https://github.com/magicuidesign/magicui",
-        //   icon: <Icons.github className="size-3" />,
-        // },
       ],
-      image: "/project-03.png",
+      image: "",
       video: "",
     },
     {
-      title: "CFPTAC",
-      href: "https://cfptac.com",
-      dates: "Sep 2023 - May 2024",
+      title: "Trackly",
+      href: "https://trickly.vercel.app",
+      dates: "2024 - Present",
       active: true,
       description:
-        "Increase the visibility of the company online and make it possible to register students online, integrate a Blog to regularly share company news and training advertisements.",
-      technologies: [
-        "Django",
-        "Python",
-        "Jinja",
-        "Bootstrap",
-        "Javascript",
-        "PostgreSQL",
-        "Docker",
-        "Gunicorn",
-      ],
-      links: [
-        {
-          type: "Website",
-          href: "https://cfptac.com",
-          icon: <Icons.globe className="size-3" />,
-        },
-      ],
-      image: "/project-02.png",
-      video:
-        "",
-    },
-    {
-      title: "ETResS",
-      href: "https://etress.com",
-      dates: "March 2023 - Sep 2024",
-      active: true,
-      description:
-        "The Co-founders of ETResS and I had the idea of ​creating a platform to overcome the problem of acquiring a bus ticket in our towns and villages. The platform is to make it possible to purchase a ticket from your mobile with stable internet access without having to travel.",
+        "A web app to track all your excursion and habitude. Visualize your progress and stay consistent with your goals.",
       technologies: [
         "React",
         "Next.js",
         "Typescript",
-        "PostgreSQL",
-        "Python",
-        "Django",
-        "Rest Framework",
-        "PostgreSQL",
-        "Jinja",
-        "Bootstrap",
-        "Javascript",
+        "TailwindCSS",
+        "Supabase",
+        "Framer Motion",
       ],
       links: [
         {
           type: "Website",
-          href: "https://etress.com",
+          href: "https://trickly.vercel.app",
           icon: <Icons.globe className="size-3" />,
         },
-        // {
-        //   type: "Source",
-        //   href: "https://github.com/dillionverma/llm.report",
-        //   icon: <Icons.github className="size-3" />,
-        // },
       ],
-      image: "/project-04.png",
+      image: "",
+      video: "",
+    },
+    {
+      title: "Doculabs",
+      href: "https://doculabs.vercel.app",
+      dates: "2024 - Present",
+      active: true,
+      description:
+        "A SaaS to analyze your professional documents (Service Offer, Quote, Business Pitch, etc.) and suggest improvements using advanced AI.",
+      technologies: [
+        "React",
+        "Next.js",
+        "Typescript",
+        "TailwindCSS",
+        "Prisma",
+        "PostgreSQL",
+        "OpenAI",
+      ],
+      links: [
+        {
+          type: "Website",
+          href: "https://doculabs.vercel.app",
+          icon: <Icons.globe className="size-3" />,
+        },
+      ],
+      image: "",
       video: "",
     },
   ],
