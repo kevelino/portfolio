@@ -33,8 +33,7 @@ export default function NotFound() {
         </Link>
       </Button>
 
-      {/* Decorative Blueprint Markers */}
-      <div className="absolute top-1/4 left-10 opacity-10 pointer-events-none hidden md:block">
+      <div className="absolute top-1/4 left-10 opacity-10 pointer-events-none hidden md:block" aria-hidden="true">
         <div className="text-[10px] font-mono whitespace-pre">
           [REF-ID: 404-ERR]
           STATUS: NULL_PTR
